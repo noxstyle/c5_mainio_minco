@@ -62,6 +62,9 @@ class MainioMincoPackage extends Package {
 				define('MINCO_MINIFY_INLINE', true);
 			}
 		}
+		if(!defined('MINICO_REPLACE_CSS_IMG_PATHS')) {
+			define('MINICO_REPLACE_CSS_IMG_PATHS', true);
+		}
 		
 		// To enable users calling the block start and end functions
 		// inside the templates

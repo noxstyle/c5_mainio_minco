@@ -132,6 +132,14 @@ class MincoFileWriter {
 					$path = $DIR_ROOT . $f;
 					if (file_exists($path)) {
 						if (($cont = @file_get_contents($path)) !== false) {
+
+							// Replace image paths
+							if(MINICO_REPLACE_CSS_IMG_PATHS) {
+								if($ext === 'css') {
+									$cont = self::_replaceCSSImagePaths($f, $cont);
+								}
+							}
+							
 							if ($canMinify && !preg_match($noMinPattern, basename($f))) {
 								// Minify only files that don't have names matching the $noMinPattern
 								// This is also why we minify the files one at a time
@@ -157,6 +165,58 @@ class MincoFileWriter {
 			}
 		}
 		return $r;
+	}
+
+	/**
+	 * Replaces all css image paths with their actual relation to the installation root
+	 * @param String $filePath Path to .css file
+	 * @param String $cont .css file contents
+	 * @return String
+	 */
+	private function _replaceCSSImagePaths($filePath, $cont) {
+		preg_match_all("@url\((.*)\)@", $cont, $matches);
+		if(!empty($matches[1]))
+		{
+			foreach($matches[1] as $img)
+			{
+				// Get rid of quotation marks and whitespaces, if any
+				$imgPath = str_replace(array('\'', '"'), '', trim($img));
+				
+				// Check that the image is not loaded from online
+				if(strpos($img, 'http://') === false)
+				{
+					// Get the amount of levels to descent on folder structure
+					$levelsDown = substr_count($img, '../');
+					
+					if($levelsDown > 0)
+					{
+						$walkDown = explode('/', $filePath);
+						$cssFile = $walkDown[count($walkDown) - 1];
+
+						// Get rid of the last element in .css path, i.e. stylesheet name
+						// and descend to the correct level in folder hierarchy
+						array_pop($walkDown);					
+						for($i=0;$i<$levelsDown;$i++) {
+							array_pop($walkDown);
+						}
+						 
+						$walkDown = implode('/', $walkDown);
+						$newImgPath = $walkDown.'/'.str_replace('../', '', $imgPath);
+					}
+					else
+					{
+						$cssPath = explode('/',$filePath);
+						array_pop($cssPath); // Removes stylesheet
+						$newImgPath = implode('/',$cssPath) .'/'. $imgPath;
+					}
+					
+					// Replace the image path in file
+					$cont = str_replace($img, $newImgPath, $cont);
+									
+				}
+			}
+		}
+		return $cont;
 	}
 	
 }

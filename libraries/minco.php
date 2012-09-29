@@ -117,6 +117,59 @@ class Minco {
 		return $start . $head . $endHead . $body . $end;
 	}
 
+	/**
+	 * Allows easier minification of resources passed from controller
+	 * This function is combination of MinicoBlock::_endBlock() and self::_runCombine()
+	 * Anyhow these two methods have stuff that we dont actually need when passing resources
+	 * from controller and refactoring would have only complicated things so we
+	 * affront the DRY methodology and introduce some duplicated code.
+	 *
+	 * @param Array $resources html helper resource objects as an array
+	 * @param String $cacheID resource name
+	 * @param Int $fileVersion
+	 * @param Bool $writeFiles
+	 * @return String
+	 */
+	public function combineResources($resources, $cacheID, $fileVersion=null, $writeFiles=false) {
+		$opts = array();
+		$content = '';
+
+		foreach($resources as $r) {
+			/*
+			 * Creates similar output that you would have in your theme file
+			 */
+			if($r instanceof CSSOutputObject OR $r instanceof JavaScriptOutputObject) {
+				$content .= $r->__toString() . "\n";
+			}
+		}
+
+		if(!is_null($cacheVersion)) {
+			$cacheID . ':' . $fileVersion;
+			$opts['resourceVersion'] = $fileVersion;
+		}
+
+		$cachedContent = false;
+		if (!MINCO_BYPASS_CACHE) {
+			$cachedContent = Cache::get('minco_combined_content', $cacheID);
+		}
+
+		if ($cachedContent === false) {
+			// Run the combine
+			if ($writeTemplate) {
+				$opts['writeFiles'] = true;
+			}
+
+			$content = $this->_comjs->combine($content, $opts);
+			$content = $this->_comcss->combine($content, $opts);
+
+			Cache::set('minco_combined_content', $cacheID, $content);
+		} else {
+			$content = $cachedContent;
+		}
+		
+		return $content;
+	}
+
 	private function _runCombine($content, $opts = array()) {
 		// Parse all conditional statements out of the $content
 		$regex = '<\!--\[if[^\]]*IE( [\d]+)?\]>([^\!]*)<\!\[endif\]-->';

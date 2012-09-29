@@ -63,7 +63,7 @@ class MainioMincoPackage extends Package {
 			}
 		}
 		if(!defined('MINICO_REPLACE_CSS_IMG_PATHS')) {
-			define('MINICO_REPLACE_CSS_IMG_PATHS', true);
+			define('MINICO_REPLACE_CSS_IMG_PATHS', false);
 		}
 		
 		// To enable users calling the block start and end functions

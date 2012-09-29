@@ -134,6 +134,38 @@ The order of the files resources from the original HTML are the following:
 8. All the CSS files loaded from your site combined into a single file
 9. IE conditional statements
 
+## Passing Resources from Controllers ##
+You can minify and combine your resources directly from your controller by calling
+Minco::combineResources() routine. It takes in an array of js/css files loaded
+via Concrete5_Helper_Html (or _V2).
+
+Options:
+* $resources Array - an array holding your css/js resources
+* $cacheID String - same as the first parameter on MincoBlock::start(), Unique cache ID for this block
+* $fileVersion Int - same as the second paramter on MinicoBlock::start(), file version number
+* $writeFiles Bool - a trigger whether files should be saved or not, same as on MinicoBlock::end()
+
+Usage:
+
+```php
+$html = Loader::helper('html');
+$m = Minco::getInstance();
+
+$cr = $m->combineResources(array(
+	$html->javascript('myscript1.js', 'pkghandle'),
+    $html->javascript('myscript2.js', 'pkghandle'),
+), 'my_page_specific_scripts');
+
+$this->addFooterItem($cr);
+
+$cr = $m->combineResources(array(
+    $html->css('mycss1.css', 'pkghandle'),
+    $html->css('mycss2.css', 'pkghandle'),
+    $html->css('mycss3.min.css'),
+), 'my_page_specific_css', 1);
+
+$this->addHeaderItem($cr);
+```
 
 ## CDN resources ##
 By default, if the Mainio MinCo finds any occurences of js/css files that are defined
@@ -156,4 +188,5 @@ The boolean configurations are the following (true/false):
 * MINCO_CLIENT_CACHE: Determines whether to tell the client browser to cache the resources, defaults to true
 * MINCO_MINIFY_HTML: Determines whether the output HTML is wanted to be minified, defaults to false
 * MINCO_MINIFY_INLINE: Determines whether the inline js/css in minco blocks is wanted to be minified, defaults to true
+* MINICO_REPLACE_CSS_IMG_PATHS: Changes all css url() paths to relative paths to your C5 root, enable this if you're having problems with images
 

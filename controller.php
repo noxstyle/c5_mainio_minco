@@ -69,6 +69,7 @@ class MainioMincoPackage extends Package {
 		// To enable users calling the block start and end functions
 		// inside the templates
 		Loader::library("minco_block", "mainio_minco");
+		Loader::library('minco', 'mainio_minco');
 		
 		$req = Request::get();
 		if (MINCO_MINIFY_HTML && strpos($req->getRequestPath(), "dashboard") === false) {

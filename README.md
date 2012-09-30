@@ -137,7 +137,7 @@ The order of the files resources from the original HTML are the following:
 ## Passing Resources from Controllers ##
 You can minify and combine your resources directly from your controller by calling
 Minco::combineResources() routine. It takes in an array of js/css files loaded
-via Concrete5_Helper_Html (or _V2) and returns <style> or <script> tag similarly to
+via Concrete5_Helper_Html (or _V2) and returns a style or a script tag similarly to
 MincoBlock functionality.
 
 Options:

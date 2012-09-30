@@ -137,12 +137,13 @@ The order of the files resources from the original HTML are the following:
 ## Passing Resources from Controllers ##
 You can minify and combine your resources directly from your controller by calling
 Minco::combineResources() routine. It takes in an array of js/css files loaded
-via Concrete5_Helper_Html (or _V2).
+via Concrete5_Helper_Html (or _V2) and returns <style> or <script> tag similarly to
+MincoBlock functionality.
 
 Options:
 * $resources Array - an array holding your css/js resources
-* $cacheID String - same as the first parameter on MincoBlock::start(), Unique cache ID for this block
-* $fileVersion Int - same as the second paramter on MinicoBlock::start(), file version number
+* $cacheID String - same as the first parameter on MincoBlock::start(), Unique cache ID for the resource set
+* $fileVersion Int - same as the second parameter on MinicoBlock::start(), file version number
 * $writeFiles Bool - a trigger whether files should be saved or not, same as on MinicoBlock::end()
 
 Usage:
